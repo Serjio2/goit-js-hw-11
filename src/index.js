@@ -1,4 +1,6 @@
-import {getImage} from './js/get-image';
+
+import { getImage, qwery } from './js/get-image';
+
 
 const searchInputFormEl = document.querySelector('.search-form');
 
@@ -9,11 +11,24 @@ searchInputFormEl.addEventListener('submit', heandleSearchBtn);
 
 
 function heandleSearchBtn(event) {
-event.preventDefault();
-const value = event.target[0].value;
+    event.preventDefault();
+    
+    qwery = event.target[0].value;
+    
+  console.log(qwery)
+  
 
-getImage();
+  getImage().then(data => {
 
-console.log(value);
+    for(const item of data.hits) {
 
-}; 
+        const { webformatURL, largeImageURL, tags, likes, views, comments, downloads } = item;
+
+    // console.log(webformatURL)
+    }
+
+  
+    }
+  )
+}
+
