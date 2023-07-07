@@ -13,7 +13,7 @@ const safesearch = true;
   }
 
  getImage() {
-  return fetch(`${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=${imageType}&orientation=${orientation}&safesearch=${safesearch}`)
+  return fetch(`${BASE_URL}?key=${API_KEY}&q=${this.searchQuery}&image_type=${imageType}&orientation=${orientation}&safesearch=${safesearch}&per_page=40`)
   .then((response) => {
     if (!response.ok) {
         throw new Error(response.status)
@@ -27,7 +27,7 @@ const safesearch = true;
   }
 
   set query(newQuery) {
-    this.searchQuery = newQuery
+    this.searchQuery = newQuery;
   }
 }
 

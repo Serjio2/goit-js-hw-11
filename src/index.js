@@ -1,3 +1,4 @@
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import GetImageAPI from './js/get-image';
 
 const getimageApiInstance = new GetImageAPI();
@@ -6,7 +7,7 @@ const searchInputFormEl = document.querySelector('.search-form');
 const createGalleryEl = document.querySelector('.gallery');
 
 
-// console.log(galleryInfoEl);
+// console.log(searchInputFormEl.searchQuery);
 
 searchInputFormEl.addEventListener('submit', heandleSearchBtn);
 
@@ -21,6 +22,9 @@ function heandleSearchBtn(event) {
   getimageApiInstance
     .getImage()
     .then(data => {
+    //   if (Object.keys(data).length === 0) {
+    //     console.log('пуст');
+    // }
       for (const item of data.hits) {
         const {
           webformatURL,
@@ -40,16 +44,16 @@ function heandleSearchBtn(event) {
           
           <div class="info">
             <p class="info-item">
-              <b>Likes${likes}</b>
+              <b>Likes<span class="info-number">${likes}</span></b>
             </p>
             <p class="info-item">
-              <b>Views${views}</b>
+              <b>Views<span class="info-number">${views}</span></b>
             </p>
             <p class="info-item">
-              <b>Comments${comments}</b>
+              <b>Comments<span class="info-number">${comments}</span></b>
             </p>
             <p class="info-item">
-              <b>Downloads${downloads}</b>
+              <b>Downloads<span class="info-number">${downloads}</span></b>
             </p>
           </div>
         </div>
@@ -62,10 +66,12 @@ function heandleSearchBtn(event) {
         // console.log(item);
 
       }
+      searchInputFormEl.searchQuery.value = '';
     })
     .catch(() => {
-      console.log(
-        'Sorry, there are no images matching your search query. Please try again.'
-      );
+      Notify.failure('Sorry, there are no images matching your search query. Please try again.');
+      // console.log(
+        // 'Sorry, there are no images matching your search query. Please try again.'
+      // );
     });
 }
