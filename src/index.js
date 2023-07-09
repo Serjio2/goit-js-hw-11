@@ -1,77 +1,121 @@
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
+import SimpleLightbox from 'simplelightbox';
+import 'simplelightbox/dist/simple-lightbox.min.css';
 import GetImageAPI from './js/get-image';
 
+
 const getimageApiInstance = new GetImageAPI();
+const lightboxGallery = new SimpleLightbox('.gallery a');
 
 const searchInputFormEl = document.querySelector('.search-form');
 const createGalleryEl = document.querySelector('.gallery');
+const loadMoreBtnEl = document.querySelector('.load-more');
 
-
-// console.log(searchInputFormEl.searchQuery);
 
 searchInputFormEl.addEventListener('submit', heandleSearchBtn);
+
+
 
 function heandleSearchBtn(event) {
   event.preventDefault();
 
-  getimageApiInstance.query = event.target.elements.searchQuery.value;
+  loadMoreBtnEl.classList.remove('is-hidden')
 
-  // console.log(getimageApiInstance.query);
+  getimageApiInstance.query = event.target.elements.searchQuery.value.trim();
+
+  if (getimageApiInstance.query === '') {
+    Notify.failure(
+      'Sorry, there are no images matching your search query. Please try again.'
+    );
+    return;
+  }
+
+  getimageApiInstance.resetPage();
+  
+
   createGalleryEl.innerHTML = '';
 
-  getimageApiInstance
-    .getImage()
+  getimageApiInstance.getImage()
     .then(data => {
-    //   if (Object.keys(data).length === 0) {
-    //     console.log('пуст');
-    // }
-      for (const item of data.hits) {
-        const {
-          webformatURL,
-          largeImageURL,
-          tags,
-          likes,
-          views,
-          comments,
-          downloads,
-        } = item;
 
-        createGalleryEl.insertAdjacentHTML(
-          'beforeend',
-          `
-          <div class="photo-card">
-          <img src="${webformatURL}" alt="${tags}" loading="lazy" />
-          
-          <div class="info">
-            <p class="info-item">
-              <b>Likes<span class="info-number">${likes}</span></b>
-            </p>
-            <p class="info-item">
-              <b>Views<span class="info-number">${views}</span></b>
-            </p>
-            <p class="info-item">
-              <b>Comments<span class="info-number">${comments}</span></b>
-            </p>
-            <p class="info-item">
-              <b>Downloads<span class="info-number">${downloads}</span></b>
-            </p>
-          </div>
-        </div>
-        `
+      if (data.hits.length === 0) {
+        Notify.failure(
+          'Sorry, there are no images matching your search query. Please try again.'
         );
-
-        // const galleryInfoEl = document.querySelector('.info');
-        // galleryInfoEl.classList.add('card-info')
-        // console.log(galleryInfoEl);
-        // console.log(item);
-
+        loadMoreBtnEl.classList.remove('is-hidden')
+        return;
       }
-      searchInputFormEl.searchQuery.value = '';
+
+      Notify.success(`Hooray! We found ${data.totalHits} images.`);
+
+          const murkup = createGalleryCard(data.hits)
+          createGalleryEl.insertAdjacentHTML('beforeend', murkup)
+          lightboxGallery.refresh();
+          loadMoreBtnEl.classList.add('is-hidden');
+  
+      // loadMoreBtnEl.classList.toggle('hidden');
     })
     .catch(() => {
-      Notify.failure('Sorry, there are no images matching your search query. Please try again.');
-      // console.log(
-        // 'Sorry, there are no images matching your search query. Please try again.'
-      // );
+      Notify.failure('Bad request');
     });
+}
+
+loadMoreBtnEl.addEventListener('click', handleLoadMoreBtnClick);
+
+function handleLoadMoreBtnClick() {
+  getimageApiInstance.incrementPage();
+  getimageApiInstance.getImage().then(data => {
+    if (getimageApiInstance.page >= data.totalHits / 40) {
+      Notify.failure(
+        "We're sorry, but you've reached the end of search results."
+      );
+
+      loadMoreBtnEl.classList.remove('is-hidden');
+      return;
+    }
+    
+          murkup = createGalleryCard(data.hits)
+          createGalleryEl.insertAdjacentHTML('beforeend', murkup);
+          lightboxGallery.refresh();
+})
+      .catch(() => {});
+}
+
+
+
+
+function createGalleryCard(murkup) {
+  return murkup.map(
+    ({
+      webformatURL,
+      largeImageURL,
+      tags,
+      likes,
+      views,
+      comments,
+      downloads,
+    }) => {
+      return `
+  <div class="photo-card">
+  <a class="photo-link" href="${largeImageURL}">
+  <img class="photo" src="${webformatURL}" alt="${tags}" loading="lazy" />
+  </a>
+  <div class="info">
+  <p class="info-item">
+   <b>Likes</b>${likes}
+    </p>
+  <p class="info-item">
+    <b>Views</b>${views}
+  </p>
+  <p class="info-item">
+   <b>Comments</b>${comments}
+  </p>
+  <p class="info-item">
+   <b>Downloads</b>${downloads}
+  </p>
+    </div>
+  </a>
+  </div>`;
+    }
+  ).join('');
 }
