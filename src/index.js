@@ -66,7 +66,7 @@ async function handleLoadMoreBtnClick() {
       return;
     }
 
-    murkup = createGalleryCard(data.hits);
+    const murkup = createGalleryCard(data.hits);
     createGalleryEl.insertAdjacentHTML('beforeend', murkup);
     lightboxGallery.refresh();
   } catch {
