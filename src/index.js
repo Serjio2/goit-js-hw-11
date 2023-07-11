@@ -12,8 +12,6 @@ const createGalleryEl = document.querySelector('.gallery');
 const loadMoreBtnEl = document.querySelector('.load-more');
 const scrollToTop = document.querySelector('.stt');
 
-
-
 searchInputFormEl.addEventListener('submit', heandleSearchBtn);
 loadMoreBtnEl.addEventListener('click', handleLoadMoreBtnClick);
 
@@ -74,14 +72,12 @@ async function handleLoadMoreBtnClick() {
       );
 
       loadMoreBtnEl.classList.remove('is-hidden');
+      return;
     }
   } catch {
     Notify.failure('Bad request end line');
   }
 }
-
-
-
 
 document.addEventListener('scroll', event => {
   if (window.scrollY >= 500) {
