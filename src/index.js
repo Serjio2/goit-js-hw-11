@@ -10,6 +10,7 @@ const lightboxGallery = new SimpleLightbox('.gallery a');
 const searchInputFormEl = document.querySelector('.search-form');
 const createGalleryEl = document.querySelector('.gallery');
 const loadMoreBtnEl = document.querySelector('.load-more');
+const scrollToTop = document.querySelector('.stt');
 
 searchInputFormEl.addEventListener('submit', heandleSearchBtn);
 loadMoreBtnEl.addEventListener('click', handleLoadMoreBtnClick);
@@ -47,7 +48,12 @@ async function heandleSearchBtn(event) {
     const murkup = createGalleryCard(data.hits);
     createGalleryEl.insertAdjacentHTML('beforeend', murkup);
     lightboxGallery.refresh();
-    loadMoreBtnEl.classList.add('is-hidden');
+
+    if (data.totalHits >= getimageApiInstance.perPage) {
+      loadMoreBtnEl.classList.add('is-hidden');
+    } else {
+      loadMoreBtnEl.classList.remove('is-hidden');
+    }
   } catch {
     Notify.failure('Bad request');
   }
@@ -63,7 +69,6 @@ async function handleLoadMoreBtnClick() {
       );
 
       loadMoreBtnEl.classList.remove('is-hidden');
-      return;
     }
 
     const murkup = createGalleryCard(data.hits);
@@ -73,3 +78,15 @@ async function handleLoadMoreBtnClick() {
     Notify.failure('Bad request end line');
   }
 }
+
+document.addEventListener('scroll', event => {
+  if (window.scrollY >= 500) {
+    scrollToTop.style.display = 'block';
+  } else {
+    scrollToTop.style.display = 'none';
+  }
+});
+
+scrollToTop.addEventListener('click', event => {
+  window.scrollTo({ left: 0, top: 0, behavior: 'smooth' });
+});
