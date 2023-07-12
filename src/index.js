@@ -34,6 +34,7 @@ async function heandleSearchBtn(event) {
   createGalleryEl.innerHTML = '';
 
   const data = await getimageApiInstance.getImage();
+
   try {
     if (data.hits.length === 0) {
       Notify.failure(
@@ -64,16 +65,16 @@ async function handleLoadMoreBtnClick() {
   const data = await getimageApiInstance.getImage();
   try {
     if (getimageApiInstance.page >= data.totalHits / 40) {
+      const murkup = createGalleryCard(data.hits);
+      createGalleryEl.insertAdjacentHTML('beforeend', murkup);
+      lightboxGallery.refresh();
+
       Notify.failure(
         "We're sorry, but you've reached the end of search results."
       );
 
       loadMoreBtnEl.classList.remove('is-hidden');
     }
-
-    const murkup = createGalleryCard(data.hits);
-    createGalleryEl.insertAdjacentHTML('beforeend', murkup);
-    lightboxGallery.refresh();
   } catch {
     Notify.failure('Bad request end line');
   }
