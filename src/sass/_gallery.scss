@@ -62,3 +62,29 @@
   .is-hidden {
     display: block;
 }
+
+.stt {
+  display: none;
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+  width: 50px;
+  height: 50px;
+  line-height: 0;
+  text-indent: 40px;
+  white-space: nowrap;
+  overflow: hidden;
+  background: #fff;
+  border-color: #2907eb;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.stt::before {
+  position: absolute;
+  display: block;
+  text-indent: 0;
+  left: -2px;
+  top: -3px;
+  content: url("https://img.icons8.com/sf-ultralight/50/000000/chevron-up.png");
+}
